@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}CTF Portal{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">CTF<span class="dot">_</span>PORTAL</div>
+    <nav>
+      {% block nav %}{% endblock %}
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  {% block content %}{% endblock %}
+</main>
+<footer>
+  Security CTF submission portal.
+</footer>
+</body>
+</html>

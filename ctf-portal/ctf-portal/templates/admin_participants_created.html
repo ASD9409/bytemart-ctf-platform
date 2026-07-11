@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Accounts created{% endblock %}
+{% block nav %}
+<a href="{{ url_for('admin_participants') }}">Participants</a>
+<a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+{% endblock %}
+{% block content %}
+<h1 style="font-size:1.5rem;">Accounts created</h1>
+<div class="msg ok">Copy these credentials now — passwords aren't shown again after this page.</div>
+<table class="admin-table">
+  <tr><th>Name</th><th>Username</th><th>Password</th></tr>
+  {% for name, username, password in created %}
+  <tr><td>{{ name }}</td><td>{{ username }}</td><td>{{ password }}</td></tr>
+  {% endfor %}
+</table>
+<p style="margin-top:20px;"><a href="{{ url_for('admin_participants') }}">&larr; Back to participants</a></p>
+{% endblock %}

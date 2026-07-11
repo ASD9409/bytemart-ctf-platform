@@ -1,0 +1,5 @@
+# leftover config backup — should never have been in the web root
+SECRET_KEY = "bytemart123"
+DB_PASSWORD = "prod-db-pw-9f8a2c"
+AWS_ACCESS_KEY_ID = "AKIAFAKEKEYFORCTF00"
+AWS_SECRET_ACCESS_KEY = "fakeSecretKeyDoNotUseInRealLife/1234567890"

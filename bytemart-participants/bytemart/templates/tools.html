@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Tools — ByteMart{% endblock %}
+{% block content %}
+<h2>Network diagnostics</h2>
+<p class="scanline-note">Check whether a shipping partner's host is reachable.</p>
+<form method="post">
+  <label>Host</label>
+  <input type="text" name="host" value="{{ host }}" placeholder="e.g. 8.8.8.8">
+  <button type="submit">Ping</button>
+</form>
+{% if output %}
+<h2 style="margin-top:26px;">Output</h2>
+<pre class="console">{{ output }}</pre>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — CTF Portal{% endblock %}
+{% block nav %}
+<span style="color:var(--dim); margin-right:20px;">{{ participant['name'] }}</span>
+<a href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}
+{% block content %}
+
+<div class="hero" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+  <div>
+    <span class="badge">Target</span>
+    <h1 style="font-size:1.5rem;">{{ target_url }}</h1>
+    <p style="margin:6px 0 0;">Point your tools at this URL. Fill in what you find below —
+    the form autosaves as you type.</p>
+  </div>
+  <div style="text-align:center;">
+    <div class="scanline-note">Time remaining</div>
+    <div class="timer" id="timer">--:--</div>
+  </div>
+</div>
+
+{% if submitted %}
+<div class="locked-note">
+  You submitted this form at {{ submitted_at }}. It's locked for editing —
+  contact the organizer if you need changes.
+</div>
+{% endif %}
+
+<div class="two-col">
+  <div>
+    <h2>Reconnaissance</h2>
+    <form id="reconForm" onsubmit="return false;">
+      <label>Open ports / services (nmap, Zenmap)</label>
+      <textarea id="r_ports" {{ 'disabled' if submitted }}>{{ recon.get('ports','') }}</textarea>
+
+      <label>Domain / DNS info (whois, nslookup)</label>
+      <textarea id="r_dns" {{ 'disabled' if submitted }}>{{ recon.get('dns','') }}</textarea>
+
+      <label>Hidden directories / files (gobuster, dirbuster)</label>
+      <textarea id="r_dirs" {{ 'disabled' if submitted }}>{{ recon.get('dirs','') }}</textarea>
+
+      <label>Other recon notes</label>
+      <textarea id="r_notes" {{ 'disabled' if submitted }}>{{ recon.get('notes','') }}</textarea>
+    </form>
+
+    <h2 style="margin-top:30px;">Vulnerability / scope findings</h2>
+    <div id="findingsList"></div>
+    {% if not submitted %}
+    <button type="button" id="addFindingBtn">+ Add finding</button>
+    {% endif %}
+
+    {% if not submitted %}
+    <div style="margin-top:26px; display:flex; align-items:center; gap:16px;">
+      <button type="button" id="submitBtn">Submit final</button>
+      <span class="save-indicator" id="saveIndicator">Not saved yet</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div>
+    <div class="sidebar-box">
+      <h2 style="font-size:1rem;">Tool guide</h2>
+      <div class="tool-card">
+        <h4>nmap / Zenmap</h4>
+        Scans a host for open ports and running services.<br>
+        <code>nmap -sV {{ target_url.split('//')[-1].split('/')[0].split(':')[0] }}</code>
+      </div>
+      <div class="tool-card">
+        <h4>whois</h4>
+        Looks up domain registration info (owner, registrar, dates).<br>
+        <code>whois example.com</code>
+      </div>
+      <div class="tool-card">
+        <h4>nslookup / dig</h4>
+        Queries DNS records — IP addresses, mail servers, subdomains.<br>
+        <code>nslookup example.com</code>
+      </div>
+      <div class="tool-card">
+        <h4>gobuster</h4>
+        Brute-forces hidden directories/files using a wordlist.<br>
+        <code>gobuster dir -u {{ target_url }} -w wordlist.txt</code>
+      </div>
+      <div class="tool-card">
+        <h4>dirbuster</h4>
+        GUI alternative to gobuster — same idea, point-and-click.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUBMITTED = {{ 'true' if submitted else 'false' }};
+let findings = {{ findings|tojson }};
+
+function renderFindings(){
+  const list = document.getElementById('findingsList');
+  list.innerHTML = '';
+  findings.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'finding-row';
+    row.innerHTML = `
+      ${SUBMITTED ? '' : `<button type="button" class="remove-btn" data-i="${i}">remove</button>`}
+      <label>Where (page / parameter)</label>
+      <input type="text" data-field="location" data-i="${i}" value="${(f.location||'').replace(/"/g,'&quot;')}" ${SUBMITTED?'disabled':''}>
+      <label>Attack type</label>
+      <input type="text" data-field="attack_type" data-i="${i}" value="${(f.attack_type||'').replace(/"/g,'&quot;')}" placeholder="e.g. SQL Injection, Reflected XSS" ${SUBMITTED?'disabled':''}>
+      <label>How do you know it exists? (evidence / payload used)</label>
+      <textarea data-field="evidence" data-i="${i}" ${SUBMITTED?'disabled':''}>${f.evidence||''}</textarea>
+    `;
+    list.appendChild(row);
+  });
+  if (!SUBMITTED){
+    list.querySelectorAll('.remove-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        findings.splice(parseInt(btn.dataset.i), 1);
+        renderFindings();
+        scheduleSave();
+      });
+    });
+    list.querySelectorAll('input,textarea').forEach(el => {
+      el.addEventListener('input', () => {
+        findings[el.dataset.i][el.dataset.field] = el.value;
+        scheduleSave();
+      });
+    });
+  }
+}
+renderFindings();
+
+if (!SUBMITTED){
+  document.getElementById('addFindingBtn').addEventListener('click', () => {
+    findings.push({location:'', attack_type:'', evidence:''});
+    renderFindings();
+    scheduleSave();
+  });
+}
+
+function collectPayload(){
+  return {
+    recon: {
+      ports: document.getElementById('r_ports').value,
+      dns: document.getElementById('r_dns').value,
+      dirs: document.getElementById('r_dirs').value,
+      notes: document.getElementById('r_notes').value,
+    },
+    findings: findings,
+  };
+}
+
+let saveTimeout = null;
+function scheduleSave(){
+  if (SUBMITTED) return;
+  clearTimeout(saveTimeout);
+  document.getElementById('saveIndicator').textContent = 'Saving…';
+  saveTimeout = setTimeout(doSave, 1200);
+}
+function doSave(){
+  fetch('/autosave', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(collectPayload())
+  }).then(r => r.json()).then(d => {
+    if (d.ok){
+      document.getElementById('saveIndicator').textContent = 'Saved at ' + d.saved_at;
+    }
+  }).catch(() => {
+    document.getElementById('saveIndicator').textContent = 'Save failed — check connection';
+  });
+}
+if (!SUBMITTED){
+  ['r_ports','r_dns','r_dirs','r_notes'].forEach(id => {
+    document.getElementById(id).addEventListener('input', scheduleSave);
+  });
+  setInterval(doSave, 20000); // failsafe periodic save
+  window.addEventListener('beforeunload', doSave);
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    if (!confirm('Submit final answers? You will not be able to edit after this.')) return;
+    fetch('/submit', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(collectPayload())
+    }).then(r => r.json()).then(d => {
+      if (d.ok) location.reload();
+    });
+  });
+}
+
+// --- timer: sync with server periodically, tick locally in between ---
+let secondsLeft = {{ seconds_left if seconds_left is not none else 'null' }};
+function renderTimer(){
+  const el = document.getElementById('timer');
+  if (secondsLeft === null){ el.textContent = 'Not started'; return; }
+  if (secondsLeft <= 0){ el.textContent = "TIME'S UP"; el.classList.add('low'); return; }
+  const m = Math.floor(secondsLeft/60), s = secondsLeft%60;
+  el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+  if (secondsLeft <= 60) el.classList.add('low');
+}
+renderTimer();
+setInterval(() => { if (secondsLeft !== null && secondsLeft > 0){ secondsLeft--; renderTimer(); } }, 1000);
+setInterval(() => {
+  fetch('/api/timer').then(r => r.json()).then(d => { secondsLeft = d.seconds_left; renderTimer(); });
+}, 15000);
+</script>
+{% endblock %}

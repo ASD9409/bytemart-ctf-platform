@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Login — CTF Portal{% endblock %}
+{% block nav %}<a href="{{ url_for('admin_login') }}">Organizer login</a>{% endblock %}
+{% block content %}
+<div class="hero">
+  <span class="badge">Participant Login</span>
+  <h1>CTF Portal</h1>
+  <p>Log in with the username and password given to you by the organizer to access
+  the target link, tool guide, and your submission form.</p>
+</div>
+{% if error %}<div class="msg error">{{ error }}</div>{% endif %}
+<form method="post">
+  <label>Username</label>
+  <input type="text" name="username" autocomplete="off" autofocus>
+  <label>Password</label>
+  <input type="password" name="password">
+  <button type="submit">Log in</button>
+</form>
+{% endblock %}

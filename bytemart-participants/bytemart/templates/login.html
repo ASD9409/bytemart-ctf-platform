@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Login — ByteMart{% endblock %}
+{% block content %}
+<h2>Login</h2>
+{% if error %}<div class="msg error">{{ error }}</div>{% endif %}
+<form method="post">
+  <label>Username</label>
+  <input type="text" name="username" autocomplete="off">
+  <label>Password</label>
+  <input type="password" name="password">
+  <button type="submit">Sign in</button>
+</form>
+<p class="scanline-note">New here? <a href="{{ url_for('register') }}">Create an account</a>.</p>
+{% endblock %}

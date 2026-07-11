@@ -1,0 +1,31 @@
+# Archives
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.venv/
+
+# SQLite databases (auto-generated on run)
+*.db
+
+# Flask session keys
+.secret_key
+
+# Uploads (user-generated content)
+bytemart-organizer/bytemart/static/uploads/*
+bytemart-participants/bytemart/static/uploads/*
+!*/static/uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

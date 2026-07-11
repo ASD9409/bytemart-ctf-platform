@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}ByteMart{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">BYTE<span class="dot">_</span>MART</div>
+    <nav>
+      <a href="{{ url_for('index') }}">Shop</a>
+      <a href="{{ url_for('search') }}">Search</a>
+      <a href="{{ url_for('guestbook') }}">Guestbook</a>
+      <a href="{{ url_for('tools') }}">Tools</a>
+      {% if user %}
+        <a href="{{ url_for('profile') }}">Profile</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  {% block content %}{% endblock %}
+</main>
+<footer>
+  ByteMart Practice Range — built for a security CTF. Not a real store. Not real payment data.
+</footer>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Guestbook — ByteMart{% endblock %}
+{% block content %}
+<h2>Guestbook</h2>
+<form method="post">
+  <label>Name</label>
+  <input type="text" name="name">
+  <label>Message</label>
+  <textarea name="message"></textarea>
+  <button type="submit">Post</button>
+</form>
+
+<div style="margin-top:26px;">
+  {% for e in entries %}
+  <div class="entry">
+    <div class="who">{{ e['name'] }} says:</div>
+    <div>{{ e['message']|safe }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

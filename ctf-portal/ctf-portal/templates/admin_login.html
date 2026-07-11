@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Organizer Login{% endblock %}
+{% block nav %}<a href="{{ url_for('login') }}">Participant login</a>{% endblock %}
+{% block content %}
+<h2>Organizer login</h2>
+{% if error %}<div class="msg error">{{ error }}</div>{% endif %}
+<form method="post">
+  <label>Username</label>
+  <input type="text" name="username" autocomplete="off" autofocus>
+  <label>Password</label>
+  <input type="password" name="password">
+  <button type="submit">Log in</button>
+</form>
+{% endblock %}

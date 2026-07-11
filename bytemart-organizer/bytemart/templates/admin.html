@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Admin — ByteMart{% endblock %}
+{% block content %}
+<h2>Admin panel</h2>
+<span class="badge warn">Restricted</span>
+<table style="margin-top:14px;">
+  <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Password</th><th>Card</th></tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u['id'] }}</td><td>{{ u['username'] }}</td><td>{{ u['email'] }}</td>
+    <td>{{ u['role'] }}</td><td>{{ u['password'] }}</td><td>{{ u['card_number'] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

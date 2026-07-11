@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Participants — Organizer{% endblock %}
+{% block nav %}
+<a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+<a href="{{ url_for('admin_logout') }}">Logout</a>
+{% endblock %}
+{% block content %}
+<h1 style="font-size:1.6rem;">Participants</h1>
+
+<h2 style="margin-top:24px;">Add participants</h2>
+<form method="post" action="{{ url_for('admin_participants_add') }}" class="wide">
+  <label>One name per line</label>
+  <textarea name="names" style="min-height:140px;" placeholder="Asha Rao
+Bilal Khan
+Chen Wei"></textarea>
+  <button type="submit">Generate accounts</button>
+</form>
+
+<h2 style="margin-top:30px;">Existing participants</h2>
+<table class="admin-table">
+  <tr><th>Name</th><th>Username</th><th>Created</th><th></th></tr>
+  {% for p in participants %}
+  <tr>
+    <td>{{ p['name'] }}</td>
+    <td>{{ p['username'] }}</td>
+    <td>{{ p['created_at'][:19].replace('T',' ') }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin_participants_delete', pid=p['id']) }}"
+            onsubmit="return confirm('Delete this participant and their submission?');" style="display:inline; border:none; background:none; padding:0; max-width:none;">
+        <button type="submit" style="margin:0; background:none; border:1px solid var(--danger); color:var(--danger); font-size:.75rem; padding:4px 8px;">delete</button>
+      </form>
+    </td>
+  </tr>
+  {% else %}
+  <tr><td colspan="4">No participants yet.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

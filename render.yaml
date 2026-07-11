@@ -1,0 +1,24 @@
+services:
+  # ByteMart — Vulnerable target (port 5000)
+  - type: web
+    name: bytemart-target
+    runtime: python
+    plan: free
+    buildCommand: pip install flask
+    startCommand: python app.py
+    rootDir: bytemart-organizer/bytemart
+    envVars:
+      - key: PORT
+        value: 5000
+
+  # CTF Portal — Competition management (port 7000)
+  - type: web
+    name: ctf-portal
+    runtime: python
+    plan: free
+    buildCommand: pip install flask
+    startCommand: python app.py
+    rootDir: ctf-portal/ctf-portal
+    envVars:
+      - key: PORT
+        value: 7000

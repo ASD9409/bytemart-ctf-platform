@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /admin
+Disallow: /static/backup.sql.bak
+Disallow: /static/config.py.bak

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Error — ByteMart{% endblock %}
+{% block content %}
+<h2>Something went wrong</h2>
+<div class="msg error">{{ error }}</div>
+{% if query %}
+<h2 style="margin-top:20px;">Debug info</h2>
+<pre class="console">Query: {{ query }}</pre>
+{% endif %}
+{% endblock %}

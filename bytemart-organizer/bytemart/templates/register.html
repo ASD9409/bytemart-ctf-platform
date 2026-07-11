@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Register — ByteMart{% endblock %}
+{% block content %}
+<h2>Create account</h2>
+{% if error %}<div class="msg error">{{ error }}</div>{% endif %}
+<form method="post">
+  <label>Username</label>
+  <input type="text" name="username" autocomplete="off">
+  <label>Password</label>
+  <input type="password" name="password">
+  <label>Email</label>
+  <input type="email" name="email">
+  <label>Card number (demo only)</label>
+  <input type="text" name="card_number" placeholder="4111-1111-1111-1111">
+  <button type="submit">Register</button>
+</form>
+{% endblock %}

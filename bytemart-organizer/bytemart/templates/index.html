@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}ByteMart — Home{% endblock %}
+{% block content %}
+<div class="hero">
+  <span class="badge">CTF Practice Range</span>
+  <h1>ByteMart</h1>
+  <p>A small online store built for you to break. Somewhere in this site there are
+  basic-to-intermediate vulnerabilities waiting to be found — poke around the
+  login form, the search box, the guestbook, the tools page, and anywhere else
+  that takes input. Good luck.</p>
+</div>
+
+<h2>Featured products</h2>
+<div class="grid">
+  {% for p in products %}
+  <div class="card">
+    <h3>{{ p['name'] }}</h3>
+    <p class="desc">{{ p['description'] }}</p>
+    <span class="price">${{ p['price'] }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

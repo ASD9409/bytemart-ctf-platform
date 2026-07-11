@@ -1,0 +1,4 @@
+-- ByteMart nightly backup (auto-generated, remove before prod!)
+INSERT INTO users (username, password, email, role) VALUES
+  ('admin', 'SuperSecret!2024', 'admin@bytemart.local', 'admin');
+-- TODO: rotate this password before launch

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Profile — ByteMart{% endblock %}
+{% block content %}
+<h2>Account</h2>
+
+{% if target %}
+<div style="display:flex; align-items:center; gap:18px; margin-bottom:22px;">
+  {% if target['avatar'] %}
+  <img src="{{ url_for('static', filename='uploads/' ~ target['avatar']) }}"
+       alt="profile picture" style="width:72px; height:72px; object-fit:cover; border:1px solid var(--line); border-radius:2px;">
+  {% else %}
+  <div style="width:72px; height:72px; border:1px dashed var(--line); display:flex; align-items:center; justify-content:center; color:var(--dim); font-size:.7rem;">no pic</div>
+  {% endif %}
+  {% if target['id'] == user['id'] %}
+  <form method="post" action="{{ url_for('profile_picture') }}" enctype="multipart/form-data" style="border:none; background:none; padding:0; max-width:none; display:flex; align-items:center; gap:10px;">
+    <input type="file" name="picture" style="width:auto;">
+    <button type="submit" style="margin-top:0;">Update picture</button>
+  </form>
+  {% endif %}
+</div>
+
+<table>
+  <tr><th>ID</th><td>{{ target['id'] }}</td></tr>
+  <tr><th>Username</th><td>{{ target['username'] }}</td></tr>
+  <tr><th>Email</th><td>{{ target['email'] }}</td></tr>
+  <tr><th>Role</th><td>{{ target['role'] }}</td></tr>
+  <tr><th>Card on file</th><td>{{ target['card_number'] }}</td></tr>
+</table>
+
+<h2 style="margin-top:28px;">Orders</h2>
+<table>
+  <tr><th>ID</th><th>Item</th><th>Ship to</th></tr>
+  {% for o in orders %}
+  <tr><td>{{ o['id'] }}</td><td>{{ o['item'] }}</td><td>{{ o['address'] }}</td></tr>
+  {% else %}
+  <tr><td colspan="3">No orders yet.</td></tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No such user.</p>
+{% endif %}
+
+<h2 style="margin-top:28px;">Update email</h2>
+<form method="post" action="{{ url_for('update_email') }}">
+  <label>New email</label>
+  <input type="email" name="email" value="{{ user['email'] }}">
+  <button type="submit">Save</button>
+</form>
+{% endblock %}

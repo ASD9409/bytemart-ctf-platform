@@ -1,0 +1,2 @@
+Welcome to ByteMart Reports.
+This folder holds shipped invoices. Try ?file=invoice_1024.txt

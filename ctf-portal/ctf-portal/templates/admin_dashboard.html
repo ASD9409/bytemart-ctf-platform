@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Organizer Dashboard{% endblock %}
+{% block nav %}
+<a href="{{ url_for('admin_participants') }}">Participants</a>
+<a href="{{ url_for('admin_export_csv') }}">Export all (CSV)</a>
+<a href="{{ url_for('admin_logout') }}">Logout</a>
+{% endblock %}
+{% block content %}
+<h1 style="font-size:1.6rem;">Organizer dashboard</h1>
+
+<div class="two-col" style="margin-top:20px;">
+  <div>
+    <h2>Live submissions <span class="scanline-note" id="lastRefresh"></span></h2>
+    <table class="admin-table">
+      <tr><th>Name</th><th>Username</th><th>Status</th><th>Last updated</th><th></th></tr>
+      <tbody id="statusBody">
+        <tr><td colspan="5">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <div class="sidebar-box">
+      <h2 style="font-size:1rem;">Timer</h2>
+      <p class="scanline-note">Current: <span id="timerDisplay">--</span></p>
+      <form method="post" action="{{ url_for('admin_timer_set') }}">
+        <label>Start round — minutes from now</label>
+        <input type="text" name="minutes" value="60">
+        <button type="submit">Set / restart timer</button>
+      </form>
+      <form method="post" action="{{ url_for('admin_timer_extend') }}" style="margin-top:14px;">
+        <label>Extend deadline by (minutes)</label>
+        <input type="text" name="extra_minutes" value="10">
+        <button type="submit">Extend now</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function statusPill(s){
+  const cls = s === 'submitted' ? 'submitted' : (s === 'draft in progress' ? 'draft' : 'notstarted');
+  return `<span class="status-pill ${cls}">${s}</span>`;
+}
+function refresh(){
+  fetch('/admin/api/status').then(r => r.json()).then(d => {
+    const body = document.getElementById('statusBody');
+    if (!d.participants.length){
+      body.innerHTML = '<tr><td colspan="5">No participants added yet.</td></tr>';
+      return;
+    }
+    body.innerHTML = d.participants.map(p => `
+      <tr>
+        <td>${p.name}</td>
+        <td>${p.username}</td>
+        <td>${statusPill(p.status)}</td>
+        <td>${p.updated_at ? p.updated_at.replace('T',' ').slice(0,19) : '—'}</td>
+        <td><a href="/admin/download/${p.username}">download</a></td>
+      </tr>
+    `).join('');
+    document.getElementById('lastRefresh').textContent = 'updated ' + new Date().toLocaleTimeString();
+  });
+  fetch('/api/timer').then(r => r.json()).then(d => {
+    const el = document.getElementById('timerDisplay');
+    if (d.seconds_left === null){ el.textContent = 'not started'; return; }
+    const m = Math.floor(d.seconds_left/60), s = d.seconds_left%60;
+    el.textContent = (d.seconds_left <= 0) ? "time's up" : `${m}:${String(s).padStart(2,'0')} remaining`;
+  });
+}
+refresh();
+setInterval(refresh, 4000);
+</script>
+{% endblock %}
