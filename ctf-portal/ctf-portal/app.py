@@ -463,4 +463,4 @@ def admin_download_one(username):
 
 if __name__ == "__main__":
     init_db()
-    app.run(host="0.0.0.0", port=7000, debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 7000)), debug=True)

@@ -311,4 +311,4 @@ if __name__ == "__main__":
     os.makedirs(os.path.join(APP_DIR, "reports"), exist_ok=True)
     init_db()
     # --- VULNERABLE: debug mode on (stack traces / interactive debugger exposed) ---
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
